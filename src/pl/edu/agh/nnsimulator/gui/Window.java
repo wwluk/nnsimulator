@@ -25,17 +25,20 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import static javax.swing.JScrollBar.*;
+
 public class Window {
 
     private JFrame frame;
     private JTextField _layersCount;
     private List<MyFrame> _myFrames = new LinkedList<MyFrame>();
-    private JScrollPane _scrollPane;
+    private Box _scrollPane;
     private JButton _countButton;
-    private JTextField _input1TextField;
-    private JTextField _input2TextField;
     private File _fileChoosenToImport;
     private JButton _btnChooseImportingFile;
+    private JScrollPane  _jScrollPane;
+    private JTextArea _inputTextArea;
+    private JTextArea _outputTextArea;
 
     /**
      * Launch the application.
@@ -70,7 +73,7 @@ public class Window {
         frame.getContentPane().setLayout(null);
 
         JLabel lblLayersCount = new JLabel("Layers Count");
-        lblLayersCount.setBounds(0, 14, 114, 15);
+        lblLayersCount.setBounds(0, 5, 114, 30);
         frame.getContentPane().add(lblLayersCount);
 
         _layersCount = new JTextField();
@@ -81,16 +84,43 @@ public class Window {
         _layersCount.setColumns(10);
 
         JLabel lblNeuronsInLayer = new JLabel("Neurons in layer count");
-        lblNeuronsInLayer.setBounds(225, 58, 181, 15);
-        frame.getContentPane().add(lblNeuronsInLayer);
+        lblNeuronsInLayer.setBounds(225, 45, 181, 15);
+        //frame.getContentPane().add(lblNeuronsInLayer);
 
         JLabel lblActivationFunction = new JLabel("Activation function");
-        lblActivationFunction.setBounds(550, 58, 158, 15);
-        frame.getContentPane().add(lblActivationFunction);
+        lblActivationFunction.setBounds(550, 45, 158, 15);
+        //frame.getContentPane().add(lblActivationFunction);
 
-        JLabel lblLayerNumber = new JLabel("Layer number");
-        lblLayerNumber.setBounds(12, 58, 102, 15);
-        frame.getContentPane().add(lblLayerNumber);
+        JLabel lblLayerNumber = new JLabel("<html>Layer<br>number</html>");
+        lblLayerNumber.setBounds(12, 45, 102, 30);
+        //frame.getContentPane().add(lblLayerNumber);
+
+        JLabel lblLayers = new JLabel("Layers (number, neurons, activation function)");
+        lblLayers.setBounds(12, 40, 330, 45);
+        frame.getContentPane().add(lblLayers);
+
+        JLabel lblInputs = new JLabel("Inputs");
+        lblInputs.setBounds(430, 40, 100, 45);
+        frame.getContentPane().add(lblInputs);
+
+        _inputTextArea = new JTextArea();
+        frame.add(_inputTextArea);
+
+        JScrollPane jScrollPane = new JScrollPane(_inputTextArea);
+        jScrollPane.setBounds(380,80,150,490);
+        frame.add(jScrollPane);
+
+        JLabel lblOutputs = new JLabel("Outputs");
+        lblOutputs.setBounds(590, 40, 100, 45);
+        frame.getContentPane().add(lblOutputs);
+
+        _outputTextArea = new JTextArea();
+        frame.add(_outputTextArea);
+
+        JScrollPane jScrollPane2 = new JScrollPane(_outputTextArea);
+        jScrollPane2.setBounds(550,80,150,490);
+        frame.add(jScrollPane2);
+
 
         _layersCount.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
@@ -104,13 +134,29 @@ public class Window {
             }
         });
 
-        _scrollPane = new JScrollPane();
-        _scrollPane.setBounds(10,80,780,510);
+        _scrollPane = Box.createVerticalBox();
+        //_scrollPane.setBounds(10,80,500,500);
         frame.getContentPane().add(_scrollPane);
+
+
+
+        _jScrollPane = new JScrollPane(_scrollPane);
+        _jScrollPane.setBounds(10,80,340,490);
+        //_jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        frame.getContentPane().add(_jScrollPane);
+
+//        _scrollPane.setBounds(10,80,500,500);
+//        _scrollPane.setHorizontalScrollBar(new JScrollBar(HORIZONTAL));
+//        _scrollPane.setVerticalScrollBar(new JScrollBar(VERTICAL));
+//
+//        //_scrollPane.setWheelScrollingEnabled(true);
+//        _scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//        _scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+//        frame.getContentPane().add(_scrollPane);
 
         _countButton = new JButton();
         _countButton.setText("Count");
-        _countButton.setBounds(650,5,100,40);
+        _countButton.setBounds(600,5,100,30);
 
         _countButton.addActionListener(new ActionListener() {
             @Override
@@ -132,17 +178,8 @@ public class Window {
 
         });
 
-        _input1TextField = new JTextField("0");
-        _input1TextField.setBounds(550, 5, 30, 30);
-        frame.add(_input1TextField);
-
-        _input2TextField = new JTextField("0");
-        _input2TextField.setBounds(600, 5, 30, 30);
-        frame.add(_input2TextField);
-
         _btnChooseImportingFile = new JButton("Choose CSV file");
-        _btnChooseImportingFile.setBounds(300, 5, 200, 50);
-
+        _btnChooseImportingFile.setBounds(380, 5, 200, 30);
 
         _btnChooseImportingFile.addMouseListener(new MouseAdapter() {
             @Override
@@ -164,34 +201,70 @@ public class Window {
     }
 
     private void count() throws TooMuchInputLayersException, InvalidDimensionsException, IOException {
-        NeuralNetwork nn = new NeuralNetwork(2);
+        //Stringi bedace kolejnymi wejsciami
+        String[] inputsString = _inputTextArea.getText().split("\n");
+
+        //Tworzymy siec o ilosci wejsc rownej 2
+        NeuralNetwork nn = new NeuralNetwork(inputsString.length);
 
         CSVReader reader = new CSVReader(new FileReader(_fileChoosenToImport));
-        int j = 0;
-        System.out.println("_myFrame size: "+_myFrames.size());
-        for(MyFrame myFrame : _myFrames){
 
+        int j = 0;
+        for(MyFrame myFrame : _myFrames){
+            //twrorzymy tablice neuronow w danej warstwie
             NeuronData[] neuronDatas = new NeuronData[(int) myFrame.getNumberOfNeurons()];
+
+            //liczba neuronow w danej warstwie
             int neuronNumber = (int) myFrame.getNumberOfNeurons();
+
             System.out.println("j"+ j);
             for( int i = 0 ; i < neuronNumber ; i++){
                 String [] nextLine = reader.readNext();
-                // nextLine[] is an array of values from the line
-                System.out.println(nextLine[0] + " " + nextLine[1] + " " + nextLine[2]);
-                double waga = Double.parseDouble(nextLine[0]);
-                neuronDatas[i] = new NeuronData(waga , new double[]{Double.parseDouble(nextLine[1]), Double.parseDouble(nextLine[2])});
+
+                //czytamy bias
+                double bias = Double.parseDouble(nextLine[0]);
+
+                //tablica na wagi dla pojedynczego neuronu
+                double[] neuronWages = new double[nextLine.length-1];
+
+                //czytamy wagi
+                for (int k = 0 ; k < nextLine.length - 1; k++){
+                    neuronWages[k] = Double.parseDouble(nextLine[k+1]);
+                }
+
+                //zapisujemy do tablicy neuronow dany neuron
+                neuronDatas[i] = new NeuronData(bias , neuronWages);
             }
-            System.out.println("po tym blad");
+
+            //tworzymy warstwe uzywajac funkcji aktywacji i tablicy neuronow
             nn.addLayer(new NetworkLayer(myFrame.getActivationFunctionType(),neuronDatas));
             j++;
         }
 
-        double[] inputs = {Double.parseDouble(_input1TextField.getText()), Double.parseDouble(_input2TextField.getText())};
+        double[] inputs = new double[inputsString.length];
+        int i = 0;
+        System.out.println("wejscia: ");
+        for (String string : inputsString){
+            inputs[i] = Double.parseDouble(string);
+            System.out.println(inputs[i]);
+            i++;
+        }
+
+        System.out.println("inputs length: " + inputs.length);
+
         nn.setInputs(inputs);
         double[] outputs = nn.calculate();
-        for(Double output : outputs){
-            System.out.println(output);
+
+
+        String output = new String();
+        for(Double out : outputs){
+            output += out + "\n";
         }
+
+        _outputTextArea.setText(output);
+
+        System.out.println("wyjscie");
+        System.out.println(output);
 
     }
 
@@ -204,20 +277,17 @@ public class Window {
                 //_scrollPane.setVisible(false);
                 int height = 1 + (_myFrames.size()) * 30;
                 MyFrame myFrame;
-                for (long i = _myFrames.size() - 1 ; i < layersCount ; i++){
-                    if (i < 0){
-                        i = 0;
-                    }
+                for (long i = _myFrames.size() ; i < layersCount ; i++){
                     myFrame = new MyFrame(i,height);
-                    myFrame.setBounds(1, height, 150, 30);
+                    myFrame.setBounds(1, height, 320, 30);
                     _scrollPane.add(myFrame);
                     _myFrames.add(myFrame);
                     height += 30;
                 }
             } else {
                 System.out.println("asd");
-                System.out.println(_myFrames.size() - 1);
-                for (int i = _myFrames.size() - 1; i > layersCount ; i--){
+                System.out.println(_myFrames.size());
+                for (int i = _myFrames.size() - 1; i >= layersCount ; i--){
                     _myFrames.get(i).setVisible(false);
                     _myFrames.remove(i);
                 }
