@@ -21,7 +21,7 @@ public class Main {
                         new NeuronData(-0.4, new double[]{1.4})
                 }));
 
-        double[] inputs = {1.2, 1.3};
+        double[] inputs = {1, 0};
         nn.setInputs(inputs);
         double[] outputs = nn.calculate();
         for(Double output : outputs){
