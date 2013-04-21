@@ -2,8 +2,10 @@ import pl.edu.agh.nnsimulator.*;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
 import pl.edu.agh.nnsimulator.exceptions.TooMuchInputLayersException;
 import pl.edu.agh.nnsimulator.layers.InvalidDimensionsException;
+import pl.edu.agh.nnsimulator.layers.KohonenLayer;
 import pl.edu.agh.nnsimulator.layers.NetworkLayer;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
+import pl.edu.agh.nnsimulator.weightsInitializators.RandomWeightsInitializer;
 
 public class Main {
     public static void main(String[] args) throws TooMuchInputLayersException, InvalidDimensionsException {
@@ -47,8 +49,16 @@ public class Main {
         and.setInputs(new double[]{1.0, 1.0});
         System.out.println(and.calculate()[0]);
 
-
+        //Kohonen
+        System.out.println("Kohonen:");
+        NeuralNetwork kohonenNetwork = new KohonenNetwork(4,1,3,new RandomWeightsInitializer(-0.5,0.5));
+        kohonenNetwork.setInputs(new double[]{1,0,0,0});
+        outputs = kohonenNetwork.calculate();
+        System.out.println(outputs[0]);
+        System.out.println(outputs[1]);
+        System.out.println(outputs[2]);
     }
 
 
 }
+
