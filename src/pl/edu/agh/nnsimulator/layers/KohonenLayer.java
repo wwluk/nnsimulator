@@ -3,10 +3,9 @@ package pl.edu.agh.nnsimulator.layers;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
 import pl.edu.agh.nnsimulator.neurons.Neuron;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
-import pl.edu.agh.nnsimulator.weightsInitializators.WeightsInitializer;
+import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 
 import java.util.Iterator;
-import java.util.Random;
 
 public class KohonenLayer extends NetworkLayer{
     private boolean learningMode = true;

@@ -2,10 +2,9 @@ import pl.edu.agh.nnsimulator.*;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
 import pl.edu.agh.nnsimulator.exceptions.TooMuchInputLayersException;
 import pl.edu.agh.nnsimulator.layers.InvalidDimensionsException;
-import pl.edu.agh.nnsimulator.layers.KohonenLayer;
 import pl.edu.agh.nnsimulator.layers.NetworkLayer;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
-import pl.edu.agh.nnsimulator.weightsInitializators.RandomWeightsInitializer;
+import pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer;
 
 public class Main {
     public static void main(String[] args) throws TooMuchInputLayersException, InvalidDimensionsException {

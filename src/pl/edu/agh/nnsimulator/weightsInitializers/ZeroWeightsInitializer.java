@@ -1,4 +1,4 @@
-package pl.edu.agh.nnsimulator.weightsInitializators;
+package pl.edu.agh.nnsimulator.weightsInitializers;
 
 public class ZeroWeightsInitializer implements WeightsInitializer {
 

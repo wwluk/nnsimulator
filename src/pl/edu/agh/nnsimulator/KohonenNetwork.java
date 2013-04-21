@@ -2,7 +2,7 @@ package pl.edu.agh.nnsimulator;
 
 import pl.edu.agh.nnsimulator.exceptions.TooMuchInputLayersException;
 import pl.edu.agh.nnsimulator.layers.KohonenLayer;
-import pl.edu.agh.nnsimulator.weightsInitializators.WeightsInitializer;
+import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 
 public class KohonenNetwork extends NeuralNetwork{
     private KohonenLayer kohonenLayer;
