@@ -56,6 +56,13 @@ public class Neuron {
         if(!weights.containsKey(neuron)){
             throw new ConnectionNotExistsException();
         }
+        weights.put(neuron,weight);
+             /*
+        System.out.println("---WEIGHTS---");
+        for(double w : weights.values()){
+            System.out.println(w);
+
+        }      */
     }
 
 }
