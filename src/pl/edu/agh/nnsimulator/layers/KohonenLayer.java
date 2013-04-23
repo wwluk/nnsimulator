@@ -33,7 +33,7 @@ public class KohonenLayer extends NetworkLayer{
     }
 
     @Override
-    public double[] getOutput() {
+    public double[] getOutput() {/*
         double[] output = super.getOutput();
         double maxValue = output[0];
         int maxPosition = 0;
@@ -49,6 +49,27 @@ public class KohonenLayer extends NetworkLayer{
             normalizedOutput[i] = 0.0;
         }
         normalizedOutput[maxPosition] = 1.0;
+
+        return normalizedOutput;   */
+
+        int bestPosition = 0;
+        double minDist = calculateDist(neurons.get(bestPosition).getWeights());
+
+        int i=0;
+        for(Neuron neuron : neurons){
+            double dist = calculateDist(neuron.getWeights());
+            if(dist < minDist){
+                bestPosition = i;
+                minDist = dist;
+            }
+            i++;
+        }
+
+        double[] normalizedOutput = new double[neurons.size()];
+        for(i=0;i<neurons.size();i++){
+            normalizedOutput[i] = 0.0;
+        }
+        normalizedOutput[bestPosition] = 1.0;
 
         return normalizedOutput;
     }
@@ -87,6 +108,14 @@ public class KohonenLayer extends NetworkLayer{
                     }
                 }
 
+                for(row=0;row<rows;row++){
+                    for(int col=0;col<cols;col++){
+                        if(Math.abs(row-bestRow) <= learningParameters.getNeighborhood() && Math.abs(col-bestCol) <= learningParameters.getNeighborhood()){
+                            updateWeights(neuronsArray[row][col], Math.max(Math.abs(row-bestRow), Math.abs(col-bestCol)));
+                        }
+                    }
+                }
+
             }
             //TODO perform weights changes
         }
@@ -119,6 +148,19 @@ public class KohonenLayer extends NetworkLayer{
             sum += Math.pow(neuron.getOutput()-weights.get(neuron),2);
         }
         return Math.sqrt(sum);
+    }
+
+    private void updateWeights(Neuron neuron, int neighborhood){
+        Map<Neuron, Double> weights = neuron.getWeights();
+        for(Neuron prevLayerNeuron : weights.keySet()){
+            double prevWeight = weights.get(prevLayerNeuron);
+            try {
+                double newWeight = prevWeight + (1.0/1.0+neighborhood) * learningParameters.getAlpha() * (prevLayerNeuron.getOutput() - prevWeight);
+                neuron.updateWeight(prevLayerNeuron, newWeight);
+            } catch (ConnectionNotExistsException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
     }
 
     public LearningParameters getLearningParameters() {
