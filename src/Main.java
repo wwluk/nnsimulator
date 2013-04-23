@@ -5,6 +5,7 @@ import pl.edu.agh.nnsimulator.layers.InvalidDimensionsException;
 import pl.edu.agh.nnsimulator.layers.NetworkLayer;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
 import pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer;
+import pl.edu.agh.nnsimulator.weightsInitializers.ZeroWeightsInitializer;
 
 public class Main {
     public static void main(String[] args) throws TooMuchInputLayersException, InvalidDimensionsException {
@@ -50,14 +51,48 @@ public class Main {
 
         //Kohonen
         System.out.println("Kohonen:");
-        NeuralNetwork kohonenNetwork = new KohonenNetwork(4,1,3,new RandomWeightsInitializer(-0.5,0.5));
-        kohonenNetwork.setInputs(new double[]{1,0,0,0});
-        outputs = kohonenNetwork.calculate();
-        System.out.println(outputs[0]);
-        System.out.println(outputs[1]);
-        System.out.println(outputs[2]);
+        KohonenNetwork kohonenNetwork = new KohonenNetwork(4,1,3,new RandomWeightsInitializer(-0.5,0.5));
+//        KohonenNetwork kohonenNetwork = new KohonenNetwork(4,1,3,new ZeroWeightsInitializer());
+
+        kohonenTest(kohonenNetwork, new double[]{1,1,0,0});
+        kohonenTest(kohonenNetwork, new double[]{0,1,1,0});
+        kohonenTest(kohonenNetwork, new double[]{0,0,1,1});
+
+        LearningParameters learningParameters = new LearningParameters();
+        learningParameters.setAlpha(0.3);
+        learningParameters.setNeighborhood(0);
+        kohonenNetwork.setLearningParametrs(learningParameters);
+        kohonenNetwork.setLearningMode(true);
+        for(int i=0;i<100000;i++){
+            kohonenNetwork.setInputs(new double[]{1,1,0,0});
+            kohonenNetwork.calculate();
+            kohonenNetwork.setInputs(new double[]{0,1,1,0});
+            kohonenNetwork.calculate();
+            kohonenNetwork.setInputs(new double[]{0,0,1,1});
+            kohonenNetwork.calculate();
+        }
+
+        System.out.println("After learning:");
+        kohonenNetwork.setLearningMode(false);
+        kohonenTest(kohonenNetwork, new double[]{1,1,0,0});
+        kohonenTest(kohonenNetwork, new double[]{0,1,1,0});
+        kohonenTest(kohonenNetwork, new double[]{0,0,1,1});
+
+
     }
 
+    private static void kohonenTest(KohonenNetwork kohonenNetwork, double[] inputs) throws InvalidDimensionsException {
+        StringBuilder sb = new StringBuilder();
+        for(double input: inputs){
+            sb.append(input).append("  ");
+        }
+        System.out.println("Testing Kohonen with input " + sb.toString());
 
+        kohonenNetwork.setInputs(inputs);
+        double[] outputs = kohonenNetwork.calculate();
+        for(double output : outputs){
+            System.out.println(output);
+        }
+    }
 }
 

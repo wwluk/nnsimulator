@@ -1,16 +1,20 @@
 package pl.edu.agh.nnsimulator.layers;
 
+import pl.edu.agh.nnsimulator.LearningParameters;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
+import pl.edu.agh.nnsimulator.exceptions.ConnectionNotExistsException;
 import pl.edu.agh.nnsimulator.neurons.Neuron;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
 import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 
 import java.util.Iterator;
+import java.util.Map;
 
 public class KohonenLayer extends NetworkLayer{
-    private boolean learningMode = true;
+    private boolean learningMode = false;
     private Neuron[][] neuronsArray = null;
     private int rows, cols;
+    private LearningParameters learningParameters;
 
 
     public KohonenLayer(int inputs, int rows, int cols, WeightsInitializer weightsInitializer){
@@ -51,10 +55,38 @@ public class KohonenLayer extends NetworkLayer{
 
     @Override
     public void calculate() {
-        super.calculate();    //To change body of overridden methods use File | Settings | File Templates.
+        super.calculate();
+
         if(learningMode){
             if(neuronsArray == null){
                 prepareLayer();
+            }
+
+            int bestRow=0, bestCol=0;
+            double minDist = Double.MAX_VALUE;
+
+            for(int row=0; row<rows; row++){
+                for(int col=0; col<cols; col++){
+                    double dist = calculateDist(neuronsArray[row][col].getWeights());
+                    if(dist > minDist){
+                        minDist = dist;
+                        bestRow = row;
+                        bestCol = col;
+                    }
+                }
+
+                Neuron bestNeuron = neuronsArray[bestRow][bestCol];
+                Map<Neuron, Double> weights = bestNeuron.getWeights();
+                for(Neuron prevLayerNeuron : weights.keySet()){
+                    double prevWeight = weights.get(prevLayerNeuron);
+                    try {
+                        double newWeight = prevWeight + learningParameters.getAlpha() * (prevLayerNeuron.getOutput() - prevWeight);
+                        bestNeuron.updateWeight(prevLayerNeuron, newWeight);
+                    } catch (ConnectionNotExistsException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                }
+
             }
             //TODO perform weights changes
         }
@@ -79,5 +111,21 @@ public class KohonenLayer extends NetworkLayer{
         }
 
         return neuronsData;
+    }
+
+    private double calculateDist(Map<Neuron, Double> weights){
+        double sum=0;
+        for(Neuron neuron : weights.keySet()){
+            sum += Math.pow(neuron.getOutput()-weights.get(neuron),2);
+        }
+        return Math.sqrt(sum);
+    }
+
+    public LearningParameters getLearningParameters() {
+        return learningParameters;
+    }
+
+    public void setLearningParameters(LearningParameters learningParameters) {
+        this.learningParameters = learningParameters;
     }
 }

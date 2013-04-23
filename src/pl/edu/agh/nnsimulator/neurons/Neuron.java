@@ -1,22 +1,23 @@
 package pl.edu.agh.nnsimulator.neurons;
 
 import pl.edu.agh.nnsimulator.activationFunctions.*;
+import pl.edu.agh.nnsimulator.exceptions.ConnectionNotExistsException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Neuron {
-    private Map<Neuron, Double> connections = new HashMap<Neuron, Double>();
-
+    private Map<Neuron, Double> weights;
     private ActivationFunctionType activationFunctionType;
     private ActivationFunctionInterface activationFunction;
     private double bias;
     protected double output;
 
-    public Neuron(ActivationFunctionType activationFunctionType, double bias, Map<Neuron, Double> connections){
+    public Neuron(ActivationFunctionType activationFunctionType, double bias, Map<Neuron, Double> weights){
         this.activationFunctionType = activationFunctionType;
         this.bias = bias;
-        this.connections = connections;
+        this.weights = new HashMap<Neuron, Double>();
+        this.weights = weights;
 
         switch (activationFunctionType){
             case PURELIN:
@@ -33,8 +34,8 @@ public class Neuron {
 
     public double calculate(){
         double result = 0;
-        for(Neuron neuron : connections.keySet()){
-            result +=neuron.getOutput()*connections.get(neuron);
+        for(Neuron neuron : weights.keySet()){
+            result +=neuron.getOutput()* weights.get(neuron);
 
         }
         result += bias;
@@ -47,5 +48,14 @@ public class Neuron {
         return output;
     }
 
+    public Map<Neuron, Double> getWeights() {
+        return new HashMap<Neuron, Double>(weights);
+    }
+
+    public void updateWeight(Neuron neuron, double weight) throws ConnectionNotExistsException {
+        if(!weights.containsKey(neuron)){
+            throw new ConnectionNotExistsException();
+        }
+    }
 
 }

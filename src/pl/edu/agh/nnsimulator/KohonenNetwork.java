@@ -6,6 +6,7 @@ import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 
 public class KohonenNetwork extends NeuralNetwork{
     private KohonenLayer kohonenLayer;
+
     public KohonenNetwork(int inputNum, int rows, int cols, WeightsInitializer weightsInitializer){
         super(inputNum);
         kohonenLayer = new KohonenLayer(inputNum, rows, cols, weightsInitializer);
@@ -14,5 +15,13 @@ public class KohonenNetwork extends NeuralNetwork{
         } catch (TooMuchInputLayersException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    public void setLearningParametrs(LearningParameters learningParametrs){
+        kohonenLayer.setLearningParameters(learningParametrs);
+    }
+
+    public void setLearningMode(boolean learningMode){
+        kohonenLayer.setLearningMode(learningMode);
     }
 }
