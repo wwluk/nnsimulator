@@ -227,7 +227,7 @@ public class Window {
         });
 
         _btnChooseImportingFile = new JButton("Choose CSV file");
-        _btnChooseImportingFile.setBounds(256, 5, 200, 30);
+        _btnChooseImportingFile.setBounds(217, 5, 147, 30);
 
         _btnChooseImportingFile.addMouseListener(new MouseAdapter() {
             @Override
@@ -285,25 +285,30 @@ public class Window {
 
         });
         btnInitialize.setText("Initialize");
-        btnInitialize.setBounds(479, 5, 100, 30);
+        btnInitialize.setBounds(376, 5, 100, 30);
         frame.getContentPane().add(btnInitialize);
+
+        JButton btnLearn = new JButton();
+        btnLearn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    learn();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InvalidDimensionsException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
+        btnLearn.setText("Learn");
+        btnLearn.setBounds(488, 5, 100, 30);
+        frame.getContentPane().add(btnLearn);
     }
 
-    private void initializeNetwork() {
-        WeightsInitializer weightsInitializer;
-
-        if (_randomOrCustomWeights.getSelection().getActionCommand().equals("Random")){
-            weightsInitializer = new RandomWeightsInitializer(new Double(_minTextField.getText()), new Double(_maxTextField.getText()));
-        } else {
-            weightsInitializer = new ZeroWeightsInitializer();
-        }
-
-
-        _kohonenNetwork = new KohonenNetwork(new Integer(_inputCount.getText()),new Integer(_rowsTextField.getText()),
-                new Integer(_columnsTextField.getText()),weightsInitializer);
-    }
-
-    private void count() throws TooMuchInputLayersException, InvalidDimensionsException, IOException {
+    private void learn() throws IOException, InvalidDimensionsException {
         LearningParameters learningParameters = new LearningParameters();
         learningParameters.setAlpha(new Double(_alfa.getText()));
         learningParameters.setNeighborhood(new Integer(_neighbourhood.getText()));
@@ -342,6 +347,47 @@ public class Window {
         for (double[] input: inputs){
             kohonenTest(_kohonenNetwork, input);
         }
+
+    }
+
+    private void initializeNetwork() {
+        WeightsInitializer weightsInitializer;
+
+        if (_randomOrCustomWeights.getSelection().getActionCommand().equals("Random")){
+            weightsInitializer = new RandomWeightsInitializer(new Double(_minTextField.getText()), new Double(_maxTextField.getText()));
+        } else {
+            weightsInitializer = new ZeroWeightsInitializer();
+        }
+
+
+        _kohonenNetwork = new KohonenNetwork(new Integer(_inputCount.getText()),new Integer(_rowsTextField.getText()),
+                new Integer(_columnsTextField.getText()),weightsInitializer);
+    }
+
+    private void count() throws TooMuchInputLayersException, InvalidDimensionsException, IOException {
+        String[] inputsString = _inputTextArea.getText().split("\n");
+
+        double[] inputs = new double[inputsString.length];
+        int i = 0;
+        System.out.println("wejscia: ");
+        for (String string : inputsString){
+            inputs[i] = Double.parseDouble(string);
+            //System.out.println(inputs[i]);
+            i++;
+        }
+
+        _kohonenNetwork.setInputs(inputs);
+        double[] outputs = _kohonenNetwork.calculate();
+        for(double output : outputs){
+            System.out.println(output);
+        }
+
+        String output = new String();
+        for(Double out : outputs){
+            output += out + "\n";
+        }
+
+        _outputTextArea.setText(output);
     }
 
 
@@ -359,4 +405,5 @@ public class Window {
         }
     }
 }
+
 
