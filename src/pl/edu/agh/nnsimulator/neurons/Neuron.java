@@ -65,4 +65,16 @@ public class Neuron {
         }      */
     }
 
+    public void normalize(){
+        double norm = 0.0;
+        for(double weight : weights.values()){
+            norm += weight*weight;
+        }
+        norm = Math.sqrt(norm);
+
+        for(Neuron neuron : weights.keySet()){
+            weights.put(neuron, weights.get(neuron)/norm);
+        }
+    }
+
 }

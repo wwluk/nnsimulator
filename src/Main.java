@@ -9,6 +9,7 @@ import pl.edu.agh.nnsimulator.weightsInitializers.ZeroWeightsInitializer;
 
 public class Main {
     public static void main(String[] args) throws TooMuchInputLayersException, InvalidDimensionsException {
+        /*
         NeuralNetwork nn = new NeuralNetwork(2);
 
         nn.addLayer(new NetworkLayer(ActivationFunctionType.PURELIN,
@@ -48,7 +49,8 @@ public class Main {
 
         and.setInputs(new double[]{1.0, 1.0});
         System.out.println(and.calculate()[0]);
-
+        */
+        /*
         //Kohonen
         System.out.println("Kohonen:");
         KohonenNetwork kohonenNetwork = new KohonenNetwork(4,1,4,new RandomWeightsInitializer(-0.1,1.1));
@@ -107,6 +109,65 @@ public class Main {
         kohonenTest(kohonenNetwork, new double[]{1,1,1,0});
         kohonenTest(kohonenNetwork, new double[]{0,1,1,1});
         kohonenTest(kohonenNetwork, new double[]{0,0,1,1});
+        */
+
+        System.out.println("====SIEĆ CP===");
+        //CP
+        double[][] inputs = new double[][]{
+                new double[]{1, 1, 1, 0, 0, 0, 0, 0, 0},
+                new double[]{0, 0, 0, 1, 1, 1, 0, 0, 0},
+                new double[]{0, 0, 0, 0, 0, 0, 1, 1, 1},
+                new double[]{1, 0, 0, 1, 0, 0, 1, 0, 0},
+                new double[]{0, 1, 0, 0, 1, 0, 0, 1, 0},
+                new double[]{0, 0, 1, 0, 0, 1, 0, 0, 1},
+                new double[]{1, 0, 0, 0, 0, 0, 0, 0, 0},
+                new double[]{0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new double[]{0, 0, 1, 0, 1, 0, 1, 0, 0}
+        };
+        KohonenNetwork kohonenNetwork = new KohonenNetwork(9,9,1,new RandomWeightsInitializer(-0.1,1.1));
+        LearningParameters learningParameters = new LearningParameters();
+        learningParameters.setAlpha(0.06);
+        learningParameters.setNeighborhood(3);
+        kohonenNetwork.setLearningParametrs(learningParameters);
+        kohonenNetwork.setLearningMode(true);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                kohonenNetwork.setInputs(input);
+                kohonenNetwork.calculate();
+            }
+        }
+
+        learningParameters.setAlpha(0.03);
+        learningParameters.setNeighborhood(2);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                kohonenNetwork.setInputs(input);
+                kohonenNetwork.calculate();
+            }
+        }
+
+        learningParameters.setAlpha(0.015);
+        learningParameters.setNeighborhood(1);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                kohonenNetwork.setInputs(input);
+                kohonenNetwork.calculate();
+            }
+        }
+
+        learningParameters.setAlpha(0.0075);
+        learningParameters.setNeighborhood(0);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                kohonenNetwork.setInputs(input);
+                kohonenNetwork.calculate();
+            }
+        }
+
+        kohonenNetwork.setLearningMode(false);
+        for(double[] input : inputs){
+            kohonenTest(kohonenNetwork, input);
+        }
 
 
     }

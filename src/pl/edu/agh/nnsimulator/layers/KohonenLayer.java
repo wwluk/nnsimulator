@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class KohonenLayer extends NetworkLayer{
+    private boolean normalize = true;
     private boolean learningMode = false;
     private Neuron[][] neuronsArray = null;
     private int rows, cols;
@@ -81,6 +82,12 @@ public class KohonenLayer extends NetworkLayer{
         if(learningMode){
             if(neuronsArray == null){
                 prepareLayer();
+            }
+
+            if(normalize){
+                for(Neuron neuron : neurons){
+                    neuron.normalize();
+                }
             }
 
             int bestRow=0, bestCol=0;
