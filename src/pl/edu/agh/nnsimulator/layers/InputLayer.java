@@ -31,8 +31,14 @@ public class InputLayer extends NetworkLayer{
             }
             norm = Math.sqrt(norm);
 
-            for(double input: inputs){
-                ((Input)inputNeuronsIterator.next()).setInput(input/norm);
+            if(norm > 0){
+                for(double input: inputs){
+                    ((Input)inputNeuronsIterator.next()).setInput(input/norm);
+                }
+            }else{
+                for(double input: inputs){
+                    ((Input)inputNeuronsIterator.next()).setInput(input);
+                }
             }
         }else{
 

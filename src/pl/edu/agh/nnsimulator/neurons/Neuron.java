@@ -71,9 +71,10 @@ public class Neuron {
             norm += weight*weight;
         }
         norm = Math.sqrt(norm);
-
-        for(Neuron neuron : weights.keySet()){
-            weights.put(neuron, weights.get(neuron)/norm);
+        if(norm > 0){
+            for(Neuron neuron : weights.keySet()){
+                weights.put(neuron, weights.get(neuron)/norm);
+            }
         }
     }
 

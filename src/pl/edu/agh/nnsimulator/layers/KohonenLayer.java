@@ -1,5 +1,6 @@
 package pl.edu.agh.nnsimulator.layers;
 
+import au.com.bytecode.opencsv.bean.MappingStrategy;
 import pl.edu.agh.nnsimulator.LearningParameters;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
 import pl.edu.agh.nnsimulator.exceptions.ConnectionNotExistsException;
@@ -7,6 +8,7 @@ import pl.edu.agh.nnsimulator.neurons.Neuron;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
 import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -162,7 +164,7 @@ public class KohonenLayer extends NetworkLayer{
         for(Neuron prevLayerNeuron : weights.keySet()){
             double prevWeight = weights.get(prevLayerNeuron);
             try {
-                double newWeight = prevWeight + (1.0/1.0+neighborhood) * learningParameters.getAlpha() * (prevLayerNeuron.getOutput() - prevWeight);
+                double newWeight = prevWeight + (1.0/(1.0+neighborhood)) * learningParameters.getAlpha() * (prevLayerNeuron.getOutput() - prevWeight);
                 neuron.updateWeight(prevLayerNeuron, newWeight);
             } catch (ConnectionNotExistsException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
