@@ -48,6 +48,10 @@ public class Neuron {
         return output;
     }
 
+    public void setOutput(double output) {
+        this.output = output;
+    }
+
     public Map<Neuron, Double> getWeights() {
         return new HashMap<Neuron, Double>(weights);
     }

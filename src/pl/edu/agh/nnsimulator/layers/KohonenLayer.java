@@ -36,7 +36,9 @@ public class KohonenLayer extends NetworkLayer{
     }
 
     @Override
-    public double[] getOutput() {/*
+    public double[] getOutput() {
+        return super.getOutput();
+    /*
         double[] output = super.getOutput();
         double maxValue = output[0];
         int maxPosition = 0;
@@ -54,7 +56,7 @@ public class KohonenLayer extends NetworkLayer{
         normalizedOutput[maxPosition] = 1.0;
 
         return normalizedOutput;   */
-
+         /*
         int bestPosition = 0;
         double minDist = calculateDist(neurons.get(bestPosition).getWeights());
 
@@ -75,6 +77,7 @@ public class KohonenLayer extends NetworkLayer{
         normalizedOutput[bestPosition] = 1.0;
 
         return normalizedOutput;
+        */
     }
 
     @Override
@@ -98,7 +101,7 @@ public class KohonenLayer extends NetworkLayer{
             for(int row=0; row<rows; row++){
                 for(int col=0; col<cols; col++){
                     double dist = calculateDist(neuronsArray[row][col].getWeights());
-                    if(dist > minDist){
+                    if(dist < minDist){
                         minDist = dist;
                         bestRow = row;
                         bestCol = col;
@@ -126,8 +129,45 @@ public class KohonenLayer extends NetworkLayer{
                 }
 
             }
-            //TODO perform weights changes
         }
+
+        int bestPosition = 0;
+        double minDist = Double.MAX_VALUE;
+
+        int i=0;
+        for(Neuron neuron : neurons){
+            double dist = calculateDist(neuron.getWeights());
+            if(dist < minDist){
+                bestPosition = i;
+                minDist = dist;
+            }
+            i++;
+        }
+
+        for(Neuron neuron : neurons){
+            neuron.setOutput(0.0);
+        }
+        neurons.get(bestPosition).setOutput(1.0);
+//        System.out.println(bestPosition);
+
+           /*
+        double maxValue = Double.MIN_VALUE;
+        int maxPosition = 0;
+        int i=0;
+        for(Neuron neuron : neurons){
+            if(neuron.getOutput() > maxValue){
+                maxValue = neuron.getOutput();
+                maxPosition = i;
+            }
+            i++;
+        }
+
+
+        for(Neuron neuron : neurons){
+            neuron.setOutput(0.0);
+        }
+        neurons.get(maxPosition).setOutput(1.0);
+        */
     }
 
 

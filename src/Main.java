@@ -56,10 +56,10 @@ public class Main {
         KohonenNetwork kohonenNetwork = new KohonenNetwork(4,1,4,new RandomWeightsInitializer(-0.1,1.1));
 //        KohonenNetwork kohonenNetwork = new KohonenNetwork(4,1,3,new ZeroWeightsInitializer());
 
-        kohonenTest(kohonenNetwork, new double[]{1,1,0,0});
-        kohonenTest(kohonenNetwork, new double[]{1,1,1,0});
-        kohonenTest(kohonenNetwork, new double[]{0,1,1,1});
-        kohonenTest(kohonenNetwork, new double[]{0,0,1,1});
+        networkTest(kohonenNetwork, new double[]{1,1,0,0});
+        networkTest(kohonenNetwork, new double[]{1,1,1,0});
+        networkTest(kohonenNetwork, new double[]{0,1,1,1});
+        networkTest(kohonenNetwork, new double[]{0,0,1,1});
 
         LearningParameters learningParameters = new LearningParameters();
         learningParameters.setAlpha(0.3);
@@ -105,10 +105,10 @@ public class Main {
 
         System.out.println("After learning:");
         kohonenNetwork.setLearningMode(false);
-        kohonenTest(kohonenNetwork, new double[]{1,1,0,0});
-        kohonenTest(kohonenNetwork, new double[]{1,1,1,0});
-        kohonenTest(kohonenNetwork, new double[]{0,1,1,1});
-        kohonenTest(kohonenNetwork, new double[]{0,0,1,1});
+        networkTest(kohonenNetwork, new double[]{1,1,0,0});
+        networkTest(kohonenNetwork, new double[]{1,1,1,0});
+        networkTest(kohonenNetwork, new double[]{0,1,1,1});
+        networkTest(kohonenNetwork, new double[]{0,0,1,1});
         */
 
         System.out.println("====SIEĆ CP===");
@@ -137,11 +137,23 @@ public class Main {
 
 
         };
-        KohonenNetwork kohonenNetwork = new KohonenNetwork(3,9,1,new RandomWeightsInitializer(-0.1,0.1));
+
+        double[][] outputs = new double[][]{
+                new double[]{0},
+                new double[]{1},
+                new double[]{1},
+                new double[]{0},
+                new double[]{1},
+                new double[]{0},
+                new double[]{0},
+                new double[]{1}
+        };
+                           /*
+        KohonenNetwork kohonenNetwork = new KohonenNetwork(3,1,9,new RandomWeightsInitializer(-0.1,0.1));
 
         kohonenNetwork.setLearningMode(false);
         for(double[] input : inputs){
-            kohonenTest(kohonenNetwork, input);
+            networkTest(kohonenNetwork, input);
         }
 
 
@@ -150,7 +162,7 @@ public class Main {
 
         kohonenNetwork.setLearningMode(true);
         learningParameters.setAlpha(0.06);
-        learningParameters.setNeighborhood(6);
+        learningParameters.setNeighborhood(7);
         for(int i=0;i<500;i++){
             for(double[] input : inputs){
                 kohonenNetwork.setInputs(input);
@@ -160,12 +172,12 @@ public class Main {
         System.out.println("=========After first learning=======");
         kohonenNetwork.setLearningMode(false);
         for(double[] input : inputs){
-            kohonenTest(kohonenNetwork, input);
+            networkTest(kohonenNetwork, input);
         }
 
         kohonenNetwork.setLearningMode(true);
         learningParameters.setAlpha(0.03);
-        learningParameters.setNeighborhood(4);
+        learningParameters.setNeighborhood(5);
         for(int i=0;i<500;i++){
             for(double[] input : inputs){
                 kohonenNetwork.setInputs(input);
@@ -176,12 +188,12 @@ public class Main {
         System.out.println("=========After second learning=======");
         kohonenNetwork.setLearningMode(false);
         for(double[] input : inputs){
-            kohonenTest(kohonenNetwork, input);
+            networkTest(kohonenNetwork, input);
         }
 
         kohonenNetwork.setLearningMode(true);
         learningParameters.setAlpha(0.015);
-        learningParameters.setNeighborhood(2);
+        learningParameters.setNeighborhood(3);
         for(int i=0;i<500;i++){
             for(double[] input : inputs){
                 kohonenNetwork.setInputs(input);
@@ -192,12 +204,12 @@ public class Main {
         System.out.println("=========After third learning=======");
         kohonenNetwork.setLearningMode(false);
         for(double[] input : inputs){
-            kohonenTest(kohonenNetwork, input);
+            networkTest(kohonenNetwork, input);
         }
 
         kohonenNetwork.setLearningMode(true);
         learningParameters.setAlpha(0.0075);
-        learningParameters.setNeighborhood(0);
+        learningParameters.setNeighborhood(1);
         for(int i=0;i<500;i++){
             for(double[] input : inputs){
                 kohonenNetwork.setInputs(input);
@@ -208,21 +220,87 @@ public class Main {
         System.out.println("After learning:");
         kohonenNetwork.setLearningMode(false);
         for(double[] input : inputs){
-            kohonenTest(kohonenNetwork, input);
+            networkTest(kohonenNetwork, input);
+        }
+            */
+
+        //TODO check why 9,1 gives wrong results
+        CPNetwork cpNetwork = new CPNetwork(3,1,9,1,new RandomWeightsInitializer(-0.1,0.1));
+
+        LearningParameters learningParameters = new LearningParameters();
+        cpNetwork.setLearningParameters(learningParameters);
+
+        cpNetwork.setKohonenLearningMode(true);
+        learningParameters.setAlpha(0.06);
+        learningParameters.setNeighborhood(7);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                cpNetwork.setInputs(input);
+                cpNetwork.calculate();
+            }
         }
 
 
+        learningParameters.setAlpha(0.03);
+        learningParameters.setNeighborhood(5);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                cpNetwork.setInputs(input);
+                cpNetwork.calculate();
+            }
+        }
+
+        learningParameters.setAlpha(0.015);
+        learningParameters.setNeighborhood(3);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                cpNetwork.setInputs(input);
+                cpNetwork.calculate();
+            }
+        }
+
+
+
+        learningParameters.setAlpha(0.0075);
+        learningParameters.setNeighborhood(1);
+        for(int i=0;i<500;i++){
+            for(double[] input : inputs){
+                cpNetwork.setInputs(input);
+                cpNetwork.calculate();
+            }
+        }
+
+        cpNetwork.setKohonenLearningMode(false);
+        cpNetwork.setGrossbergLearningMode(true);
+        learningParameters.setAlpha(0.05);
+        for(int i=0;i<85000;i++){
+            int j=0;
+            for(double[] input : inputs){
+                cpNetwork.setInputs(input);
+                cpNetwork.setExpectedOutput(outputs[j]);
+                cpNetwork.calculate();
+                j++;
+            }
+        }
+
+        cpNetwork.setKohonenLearningMode(false);
+        cpNetwork.setGrossbergLearningMode(false);
+
+        for(double[] input : inputs){
+            networkTest(cpNetwork, input);
+        }
+
     }
 
-    private static void kohonenTest(KohonenNetwork kohonenNetwork, double[] inputs) throws InvalidDimensionsException {
+    private static void networkTest(NeuralNetwork neuralNetwork, double[] inputs) throws InvalidDimensionsException {
         StringBuilder sb = new StringBuilder();
         for(double input: inputs){
             sb.append(input).append("  ");
         }
-        System.out.println("Testing Kohonen with input " + sb.toString());
+        System.out.println("Testing with input " + sb.toString());
 
-        kohonenNetwork.setInputs(inputs);
-        double[] outputs = kohonenNetwork.calculate();
+        neuralNetwork.setInputs(inputs);
+        double[] outputs = neuralNetwork.calculate();
         for(double output : outputs){
             System.out.println(output);
         }
