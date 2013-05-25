@@ -224,8 +224,7 @@ public class Main {
         }
             */
 
-        //TODO check why 9,1 gives wrong results
-        CPNetwork cpNetwork = new CPNetwork(3,1,9,1,new RandomWeightsInitializer(-0.1,0.1));
+        CPNetwork cpNetwork = new CPNetwork(3,9,1,1,new RandomWeightsInitializer(-0.1,0.1));
 
         LearningParameters learningParameters = new LearningParameters();
         cpNetwork.setLearningParameters(learningParameters);

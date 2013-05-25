@@ -107,28 +107,29 @@ public class KohonenLayer extends NetworkLayer{
                         bestCol = col;
                     }
                 }
-
-                Neuron bestNeuron = neuronsArray[bestRow][bestCol];
-                Map<Neuron, Double> weights = bestNeuron.getWeights();
-                for(Neuron prevLayerNeuron : weights.keySet()){
-                    double prevWeight = weights.get(prevLayerNeuron);
-                    try {
-                        double newWeight = prevWeight + learningParameters.getAlpha() * (prevLayerNeuron.getOutput() - prevWeight);
-                        bestNeuron.updateWeight(prevLayerNeuron, newWeight);
-                    } catch (ConnectionNotExistsException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-
-                for(row=0;row<rows;row++){
-                    for(int col=0;col<cols;col++){
-                        if(Math.abs(row-bestRow) <= learningParameters.getNeighborhood() && Math.abs(col-bestCol) <= learningParameters.getNeighborhood()){
-                            updateWeights(neuronsArray[row][col], Math.max(Math.abs(row-bestRow), Math.abs(col-bestCol)));
-                        }
-                    }
-                }
-
             }
+
+            Neuron bestNeuron = neuronsArray[bestRow][bestCol];
+            Map<Neuron, Double> weights = bestNeuron.getWeights();
+            for (Neuron prevLayerNeuron : weights.keySet()) {
+                double prevWeight = weights.get(prevLayerNeuron);
+                try {
+                    double newWeight = prevWeight + learningParameters.getAlpha() * (prevLayerNeuron.getOutput() - prevWeight);
+                    bestNeuron.updateWeight(prevLayerNeuron, newWeight);
+                } catch (ConnectionNotExistsException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
+                    if (Math.abs(row - bestRow) <= learningParameters.getNeighborhood() && Math.abs(col - bestCol) <= learningParameters.getNeighborhood()) {
+                        updateWeights(neuronsArray[row][col], Math.max(Math.abs(row - bestRow), Math.abs(col - bestCol)));
+                    }
+                }
+            }
+
+
         }
 
         int bestPosition = 0;
