@@ -11,11 +11,11 @@ public class CPNetwork extends NeuralNetwork {
     private KohonenLayer kohonenLayer;
     private GrossbergLayer grossbergLayer;
 
-    public CPNetwork(int inputNum, int kohonenRowsNum, int kohonenColsNum, int outputNum, WeightsInitializer weightsInitializer) throws TooMuchInputLayersException {
+    public CPNetwork(int inputNum, int kohonenRowsNum, int kohonenColsNum, int outputNum, WeightsInitializer weightsInitializer, ActivationFunctionType grossbergLayerActivationFunctionType) throws TooMuchInputLayersException {
         super(inputNum);
         kohonenLayer = new KohonenLayer(inputNum, kohonenRowsNum, kohonenColsNum, weightsInitializer);
         this.addLayer(kohonenLayer);
-        grossbergLayer = new GrossbergLayer(ActivationFunctionType.PURELIN, kohonenColsNum*kohonenRowsNum, outputNum, weightsInitializer);
+        grossbergLayer = new GrossbergLayer(grossbergLayerActivationFunctionType, kohonenColsNum*kohonenRowsNum, outputNum, weightsInitializer);
         this.addLayer(grossbergLayer);
     }
 

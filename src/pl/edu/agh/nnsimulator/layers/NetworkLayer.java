@@ -9,7 +9,7 @@ import java.util.*;
 public class NetworkLayer{
 
     private NeuronData[] neuronsData;
-    private ActivationFunctionType activationFunctionType;
+    protected ActivationFunctionType activationFunctionType;
     protected List<Neuron> neurons = new LinkedList<Neuron>();
 
     /**

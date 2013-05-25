@@ -2,6 +2,7 @@ package pl.edu.agh.nnsimulator.layers;
 
 import pl.edu.agh.nnsimulator.LearningParameters;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
+import pl.edu.agh.nnsimulator.activationFunctions.TansigActivationFunciton;
 import pl.edu.agh.nnsimulator.exceptions.ConnectionNotExistsException;
 import pl.edu.agh.nnsimulator.neurons.Neuron;
 import pl.edu.agh.nnsimulator.neurons.NeuronData;
@@ -56,7 +57,12 @@ public class GrossbergLayer extends NetworkLayer{
                 Map<Neuron, Double> weights = neuron.getWeights();
                 for(Neuron prevLayerNeuron : weights.keySet()){
                     double weight = weights.get(prevLayerNeuron);
-                    double newWeight = weight + learningParameters.getAlpha()*(expectedOutput[i]-prevLayerNeuron.getOutput()*weight)*prevLayerNeuron.getOutput();
+
+                    double derivative = 1.0;
+                    if(ActivationFunctionType.TANSIG.equals(activationFunctionType)){
+                        derivative = 1.0 - Math.pow(new TansigActivationFunciton().calculate(prevLayerNeuron.getOutput()*weight), 2);
+                    }
+                    double newWeight = weight + learningParameters.getAlpha()*(expectedOutput[i]-prevLayerNeuron.getOutput()*weight)*derivative*prevLayerNeuron.getOutput();
                     try {
                         neuron.updateWeight(prevLayerNeuron, newWeight);
                     } catch (ConnectionNotExistsException e) {

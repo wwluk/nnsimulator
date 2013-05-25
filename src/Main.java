@@ -224,7 +224,7 @@ public class Main {
         }
             */
 
-        CPNetwork cpNetwork = new CPNetwork(3,9,1,1,new RandomWeightsInitializer(-0.1,0.1));
+        CPNetwork cpNetwork = new CPNetwork(3,9,1,1,new RandomWeightsInitializer(-0.1,0.1), ActivationFunctionType.PURELIN);
 
         LearningParameters learningParameters = new LearningParameters();
         cpNetwork.setLearningParameters(learningParameters);
@@ -271,8 +271,8 @@ public class Main {
 
         cpNetwork.setKohonenLearningMode(false);
         cpNetwork.setGrossbergLearningMode(true);
-        learningParameters.setAlpha(0.05);
-        for(int i=0;i<85000;i++){
+        learningParameters.setAlpha(0.15);
+        for(int i=0;i<5000;i++){
             int j=0;
             for(double[] input : inputs){
                 cpNetwork.setInputs(input);
