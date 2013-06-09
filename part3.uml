@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="764.9499094749549" y="-159.06859786763223">pl.edu.agh.nnsimulator.LearningParameters</node>
+    <node x="-107.54355260510965" y="-245.70750352041844">pl.edu.agh.nnsimulator.CPNetwork</node>
+    <node x="-82.25930396298537" y="-408.7477368738685">pl.edu.agh.nnsimulator.NeuralNetwork</node>
+    <node x="457.5886139609738" y="-434.0502916918125">pl.edu.agh.nnsimulator.layers.KohonenLayer</node>
+    <node x="463.82619191309595" y="-45.60873063769867">pl.edu.agh.nnsimulator.layers.GrossbergLayer</node>
+    <node x="45.90967612150472" y="-63.66244216455448">pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer</node>
+    <node x="175.3478173405753" y="16.004828002413888">pl.edu.agh.nnsimulator.weightsInitializers.ZeroWeightsInitializer</node>
+    <node x="-95.14383423858382" y="97.20378193522438">pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="pl.edu.agh.nnsimulator.CPNetwork" target="pl.edu.agh.nnsimulator.layers.GrossbergLayer">
+      <point x="6.355184141642425" y="0.0" />
+      <point x="6.3551841416424395" y="0.0" />
+    </edge>
+    <edge source="pl.edu.agh.nnsimulator.weightsInitializers.ZeroWeightsInitializer" target="pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pl.edu.agh.nnsimulator.CPNetwork" target="pl.edu.agh.nnsimulator.layers.KohonenLayer">
+      <point x="7.663322724558938" y="0.0" />
+      <point x="7.663322724558924" y="0.0" />
+    </edge>
+    <edge source="pl.edu.agh.nnsimulator.layers.GrossbergLayer" target="pl.edu.agh.nnsimulator.LearningParameters">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pl.edu.agh.nnsimulator.CPNetwork" target="pl.edu.agh.nnsimulator.NeuralNetwork">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pl.edu.agh.nnsimulator.layers.KohonenLayer" target="pl.edu.agh.nnsimulator.LearningParameters">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer" target="pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="596.8780929390465" y="256.4306980486824" />
+  <SelectedNodes>
+    <node>pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
