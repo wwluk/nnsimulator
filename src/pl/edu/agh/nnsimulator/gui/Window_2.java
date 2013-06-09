@@ -1,16 +1,15 @@
 package pl.edu.agh.nnsimulator.gui;
 
 import au.com.bytecode.opencsv.CSVReader;
-import pl.edu.agh.nnsimulator.CPNetwork;
 import pl.edu.agh.nnsimulator.KohonenNetwork;
 import pl.edu.agh.nnsimulator.LearningParameters;
-import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
 import pl.edu.agh.nnsimulator.exceptions.TooMuchInputLayersException;
 import pl.edu.agh.nnsimulator.layers.InvalidDimensionsException;
 import pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer;
 import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 import pl.edu.agh.nnsimulator.weightsInitializers.ZeroWeightsInitializer;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,18 +22,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.*;
-
-public class Window {
+public class Window_2 {
 
     private JFrame frame;
     private JTextField _inputCount;
     private List<MyFrame> _myFrames = new LinkedList<MyFrame>();
     private JButton _countButton;
-    private File _inputFile;
-    private File _outputFile;
-    private JButton _btnChooseInputFile;
-    private JButton _btnChooseOuputFile;
+    private File _fileChoosenToImport;
+    private JButton _btnChooseImportingFile;
     private JTextArea _inputTextArea;
     private JTextArea _outputTextArea;
     private JLabel label;
@@ -49,18 +44,6 @@ public class Window {
     private JTextField _neighbourhood;
     private JTextField _iterationCount;
     private KohonenNetwork _kohonenNetwork;
-    private JPanel _activationPanel;
-    private ButtonGroup _activationFunctionType;
-    private JTextField _neuronsInKohonenLayer;
-    private LinkedList<double[]> _inputs;
-    private LinkedList<double[]> _outputs;
-    private int _inputNumber;
-    private int _outputNumber;
-    private WeightsInitializer _weightsInitializer;
-    private LearningParameters _learningParameters = new LearningParameters();
-
-    private CPNetwork _cpNetwork; //= new CPNetwork(3,9,1,1,new RandomWeightsInitializer(-0.1,0.1), ActivationFunctionType.PURELIN);
-
 
     /**
      * Launch the application.
@@ -69,7 +52,7 @@ public class Window {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    Window window = new Window();
+                    Window_2 window = new Window_2();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -81,7 +64,7 @@ public class Window {
     /**
      * Create the application.
      */
-    public Window() {
+    public Window_2() {
         initialize();
     }
 
@@ -90,22 +73,18 @@ public class Window {
      */
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 900, 600);
+        frame.setBounds(100, 100, 800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
-        JLabel lblInputCount = new JLabel("Neurons in");
-        lblInputCount.setBounds(0, 5, 150, 30);
+        JLabel lblInputCount = new JLabel("Input count");
+        lblInputCount.setBounds(0, 5, 114, 30);
         frame.getContentPane().add(lblInputCount);
-
-        JLabel lblInputCount2 = new JLabel("kohonen layer");
-        lblInputCount2.setBounds(0, 17, 150, 30);
-        frame.getContentPane().add(lblInputCount2);
 
         _inputCount = new JTextField();
         _inputCount.setText("2");
         _inputCount.setBounds(96, 12, 32, 19);
-        //frame.getContentPane().add(_inputCount);
+        frame.getContentPane().add(_inputCount);
         _inputCount.setColumns(10);
 
         JLabel lblColumns = new JLabel("Columns");
@@ -114,17 +93,17 @@ public class Window {
 
         _columnsTextField = new JTextField();
         _columnsTextField.setText("2");
-        _columnsTextField.setBounds(56, 42, 32, 19);
+        _columnsTextField.setBounds(76, 42, 32, 19);
         frame.getContentPane().add(_columnsTextField);
         _columnsTextField.setColumns(10);
 
         JLabel lblRows = new JLabel("Rows");
-        lblRows.setBounds(110, 35, 114, 30);
+        lblRows.setBounds(200, 35, 114, 30);
         frame.getContentPane().add(lblRows);
 
         _rowsTextField = new JTextField();
         _rowsTextField.setText("2");
-        _rowsTextField.setBounds(150, 42, 32, 19);
+        _rowsTextField.setBounds(256, 42, 32, 19);
         frame.getContentPane().add(_rowsTextField);
         _rowsTextField.setColumns(10);
 
@@ -148,8 +127,6 @@ public class Window {
         jRadioButton2.setActionCommand("Random");
         _randomOrCustomJPanel.add(jRadioButton2);
         _randomOrCustomWeights.add(jRadioButton2);
-
-
 
         _randomOrCustomJPanel.setBounds(0, 100, 180, 30);
         //_randomOrCustomJPanel.setSize(300,30);
@@ -182,7 +159,7 @@ public class Window {
         lblInputCount.setBounds(0, 5, 114, 30);
         frame.getContentPane().add(lblInputCount);
 
-        JLabel lblNeuronsInLayer = new JLabel("Neurons in kohonen layer number");
+        JLabel lblNeuronsInLayer = new JLabel("Neurons in layer count");
         lblNeuronsInLayer.setBounds(225, 45, 181, 15);
         //frame.getContentPane().add(lblNeuronsInLayer);
 
@@ -226,7 +203,7 @@ public class Window {
 
         _countButton = new JButton();
         _countButton.setText("Count");
-        _countButton.setBounds(750,5,100,30);
+        _countButton.setBounds(600,5,100,30);
 
         _countButton.addActionListener(new ActionListener() {
             @Override
@@ -248,68 +225,52 @@ public class Window {
 
         });
 
-        _btnChooseInputFile = new JButton("Choose input file");
-        _btnChooseInputFile.setBounds(150, 5, 130, 30);
+        _btnChooseImportingFile = new JButton("Choose CSV file");
+        _btnChooseImportingFile.setBounds(217, 5, 147, 30);
 
-        _btnChooseOuputFile = new JButton("Choose output file");
-        _btnChooseOuputFile.setBounds(285, 5, 140, 30);
-
-        _btnChooseOuputFile.addMouseListener(new MouseAdapter() {
+        _btnChooseImportingFile.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
 
                 JFileChooser fc = new JFileChooser(".");
                 int returnVal = fc.showOpenDialog(fc);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    _outputFile = fc.getSelectedFile();
+                    _fileChoosenToImport = fc.getSelectedFile();
                 }
                 //txtFieldImportingFile.setText(fileChoosenToImport.getName());
             }
         });
 
-        _btnChooseInputFile.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
+        frame.getContentPane().add(_btnChooseImportingFile);
 
-                JFileChooser fc = new JFileChooser(".");
-                int returnVal = fc.showOpenDialog(fc);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    _inputFile = fc.getSelectedFile();
-                }
-                //txtFieldImportingFile.setText(fileChoosenToImport.getName());
-            }
-        });
-
-        frame.getContentPane().add(_btnChooseInputFile);
-        frame.getContentPane().add(_btnChooseOuputFile);
 
         frame.getContentPane().add(_countButton);
 
         JLabel lblAlfa = new JLabel("Alfa");
-        lblAlfa.setBounds(0, 240, 114, 30);
+        lblAlfa.setBounds(0, 155, 114, 30);
         frame.getContentPane().add(lblAlfa);
 
         _alfa = new JTextField();
         _alfa.setText("2");
-        _alfa.setBounds(130, 245, 50, 20);
+        _alfa.setBounds(50, 160, 50, 20);
         frame.getContentPane().add(_alfa);
 
         JLabel lblAlfa2 = new JLabel("Neighbourhood");
-        lblAlfa2.setBounds(0, 270, 114, 30);
+        lblAlfa2.setBounds(0, 220, 114, 30);
         frame.getContentPane().add(lblAlfa2);
 
         _neighbourhood = new JTextField();
         _neighbourhood.setText("2");
-        _neighbourhood.setBounds(130, 275, 50, 20);
+        _neighbourhood.setBounds(130, 225, 50, 20);
         frame.getContentPane().add(_neighbourhood);
 
         JLabel lblIterationCount = new JLabel("Iteration count");
-        lblIterationCount.setBounds(0, 300, 114, 30);
+        lblIterationCount.setBounds(0, 270, 114, 30);
         frame.getContentPane().add(lblIterationCount);
 
         _iterationCount = new JTextField();
         _iterationCount.setText("2");
-        _iterationCount.setBounds(130, 305, 50, 20);
+        _iterationCount.setBounds(130, 275, 50, 20);
         frame.getContentPane().add(_iterationCount);
 
         JButton btnInitialize = new JButton();
@@ -323,16 +284,15 @@ public class Window {
 
         });
         btnInitialize.setText("Initialize");
-        btnInitialize.setBounds(435, 5, 80, 30);
+        btnInitialize.setBounds(376, 5, 100, 30);
         frame.getContentPane().add(btnInitialize);
 
-        JButton btnLearnKohonen = new JButton();
-        JButton btnLearnGrossberg = new JButton();
-        btnLearnKohonen.addMouseListener(new MouseAdapter() {
+        JButton btnLearn = new JButton();
+        btnLearn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    learnKohonen();
+                    learn();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -342,187 +302,66 @@ public class Window {
                 }
             }
         });
-
-        btnLearnGrossberg.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    learnGrossberg();
-                } catch (IOException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (InvalidDimensionsException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        });
-
-        btnLearnKohonen.setText("Learn Koh");
-        btnLearnKohonen.setBounds(520, 5, 100, 30);
-        btnLearnGrossberg.setText("Learn Gross");
-        btnLearnGrossberg.setBounds(625, 5, 120, 30);
-
-        frame.getContentPane().add(btnLearnKohonen);
-        frame.getContentPane().add(btnLearnGrossberg);
-
-        JLabel lblGrossberg = new JLabel("Grossberg layer activation function type");
-        lblGrossberg.setBounds(0, 135, 300, 45);
-        frame.getContentPane().add(lblGrossberg);
-
-
-
-        _activationPanel = new JPanel();
-        _activationPanel.setBounds(0,160,300,30);
-        _activationFunctionType = new ButtonGroup();
-
-        boolean checkActivationFunctionType = true;
-
-        for (ActivationFunctionType aft : ActivationFunctionType.values()){
-            JRadioButton jRadioButtonInside = new JRadioButton(aft.name(), checkActivationFunctionType);
-            jRadioButtonInside.setActionCommand(aft.name());
-            //System.out.println(aft.name());
-            _activationPanel.add(jRadioButtonInside);
-            _activationFunctionType.add(jRadioButtonInside);
-            //add(jRadioButton);
-            checkActivationFunctionType = false;
-        }
-
-        _activationPanel.setSize(300,30);
-
-        _activationPanel.setVisible(true);
-        _activationPanel.revalidate();
-        frame.add(_activationPanel);
-
-        JLabel lblKohonen = new JLabel("Neurons in Kohonen layer count");
-        lblKohonen.setBounds(0, 190, 200, 45);
-//        frame.getContentPane().add(lblKohonen);
-
-        _neuronsInKohonenLayer = new JTextField();
-        _neuronsInKohonenLayer.setText("2");
-        _neuronsInKohonenLayer.setBounds(200, 202, 50, 20);
-//        frame.getContentPane().add(_neuronsInKohonenLayer);
-
-
-
+        btnLearn.setText("Learn");
+        btnLearn.setBounds(488, 5, 100, 30);
+        frame.getContentPane().add(btnLearn);
     }
 
-    private void readFiles() throws IOException {
-        CSVReader readerInput = new CSVReader(new FileReader(_inputFile));
-        CSVReader readerOutput = new CSVReader(new FileReader(_outputFile));
+    private void learn() throws IOException, InvalidDimensionsException {
+        LearningParameters learningParameters = new LearningParameters();
+        learningParameters.setAlpha(new Double(_alfa.getText()));
+        learningParameters.setNeighborhood(new Integer(_neighbourhood.getText()));
+        _kohonenNetwork.setLearningParametrs(learningParameters);
+        _kohonenNetwork.setLearningMode(true);
 
-        String [] nextLine = readerInput.readNext();
-        String [] nextLineOutput = readerOutput.readNext();
-        _inputs = new LinkedList<double[]>();
-        _outputs = new LinkedList<double[]>();
+        CSVReader reader = new CSVReader(new FileReader(_fileChoosenToImport));
 
+
+
+        String [] nextLine = reader.readNext();
+        LinkedList<double[]> inputs = new LinkedList<double[]>();
+        //double[][] inputs = new double[][];
 
         while (nextLine != null){
-            _inputNumber = 0;
             double[] line = new double[nextLine.length];
             for (int k = 0 ; k < nextLine.length; k++){
                 line[k] = Double.parseDouble(nextLine[k]);
-                _inputNumber++;
             }
-            _inputs.add(line);
-            nextLine = readerInput.readNext();
+            inputs.add(line);
+            nextLine = reader.readNext();
         }
 
-        while (nextLineOutput != null){
-            _outputNumber = 0;
-            double[] line = new double[nextLineOutput.length];
-            for (int k = 0 ; k < nextLineOutput.length; k++){
-                line[k] = Double.parseDouble(nextLineOutput[k]);
-                _outputNumber++;
-            }
-            _outputs.add(line);
-            nextLineOutput = readerOutput.readNext();
-        }
-    }
 
-    private void learnKohonen() throws IOException, InvalidDimensionsException{
-        readFiles();
-
-        if (_cpNetwork == null){
-            try {
-                _cpNetwork = new CPNetwork(_inputNumber,new Integer(_rowsTextField.getText()), new Integer(_columnsTextField.getText()),
-                        _outputNumber, _weightsInitializer, ActivationFunctionType.valueOf(_activationFunctionType.getSelection().getActionCommand()));
-            } catch (TooMuchInputLayersException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        for(int i=0;i< new Integer(_iterationCount.getText());i++){
+            for (double[] input: inputs){
+                _kohonenNetwork.setInputs(input);
+                _kohonenNetwork.calculate();
             }
         }
 
-        if (_learningParameters == null){
-            _learningParameters = new LearningParameters();
-            _cpNetwork.setLearningParameters(_learningParameters);
+        System.out.println("After learning:");
+        _kohonenNetwork.setLearningMode(false);
+
+
+        for (double[] input: inputs){
+            kohonenTest(_kohonenNetwork, input);
         }
 
-        _cpNetwork.setKohonenLearningMode(true);
-        _learningParameters.setAlpha(new Double(_alfa.getText()));
-        _learningParameters.setNeighborhood(new Integer(_neighbourhood.getText()));
-        for(int i=0; i < new Integer(_iterationCount.getText());i++){
-            for(double[] input : _inputs){
-//                System.out.println(input[0]);
-//                System.out.println(input[1]);
-//                System.out.println(input[2]);
-                _cpNetwork.setInputs(input);
-                _cpNetwork.calculate();
-            }
-        }
-    }
-
-    private void learnGrossberg() throws IOException, InvalidDimensionsException {
-        readFiles();
-
-        if (_cpNetwork == null){
-            try {
-                _cpNetwork = new CPNetwork(_inputNumber,new Integer(_rowsTextField.getText()), new Integer(_columnsTextField.getText()),
-                        _outputNumber, _weightsInitializer, ActivationFunctionType.valueOf(_activationFunctionType.getSelection().getActionCommand()));
-            } catch (TooMuchInputLayersException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
-
-        LearningParameters learningParameters = new LearningParameters();
-        _cpNetwork.setLearningParameters(learningParameters);
-
-        _cpNetwork.setKohonenLearningMode(false);
-        _cpNetwork.setGrossbergLearningMode(true);
-        learningParameters.setAlpha(new Double(_alfa.getText()));
-        for(int i=0; i < new Integer(_iterationCount.getText());i++){
-            int j=0;
-            for(double[] input : _inputs){
-                _cpNetwork.setInputs(input);
-                _cpNetwork.setExpectedOutput(_outputs.get(j));
-                _cpNetwork.calculate();
-                j++;
-            }
-        }
     }
 
     private void initializeNetwork() {
-        try {
-            readFiles();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        WeightsInitializer weightsInitializer;
 
-        _learningParameters = new LearningParameters();
         if (_randomOrCustomWeights.getSelection().getActionCommand().equals("Random")){
-            _weightsInitializer = new RandomWeightsInitializer(new Double(_minTextField.getText()), new Double(_maxTextField.getText()));
+            weightsInitializer = new RandomWeightsInitializer(new Double(_minTextField.getText()), new Double(_maxTextField.getText()));
         } else {
-            _weightsInitializer = new ZeroWeightsInitializer();
+            weightsInitializer = new ZeroWeightsInitializer();
         }
 
 
-        try {
-            _cpNetwork = new CPNetwork(_inputNumber,new Integer(_rowsTextField.getText()), new Integer(_columnsTextField.getText()),
-                    _outputNumber, _weightsInitializer, ActivationFunctionType.valueOf(_activationFunctionType.getSelection().getActionCommand()));
-        } catch (TooMuchInputLayersException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        _cpNetwork.setLearningParameters(_learningParameters);
+        _kohonenNetwork = new KohonenNetwork(new Integer(_inputCount.getText()),new Integer(_rowsTextField.getText()),
+                new Integer(_columnsTextField.getText()),weightsInitializer);
     }
-
 
     private void count() throws TooMuchInputLayersException, InvalidDimensionsException, IOException {
         String[] inputsString = _inputTextArea.getText().split("\n");
@@ -536,8 +375,8 @@ public class Window {
             i++;
         }
 
-        _cpNetwork.setInputs(inputs);
-        double[] outputs = _cpNetwork.calculate();
+        _kohonenNetwork.setInputs(inputs);
+        double[] outputs = _kohonenNetwork.calculate();
         for(double output : outputs){
             System.out.println(output);
         }
