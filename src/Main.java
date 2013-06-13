@@ -195,6 +195,7 @@ public class Main {
             }
         }
 
+
         cpNetwork.setKohonenLearningMode(false);
         cpNetwork.setGrossbergLearningMode(true);
         learningParameters.setAlpha(0.15);

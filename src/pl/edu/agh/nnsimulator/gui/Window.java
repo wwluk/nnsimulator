@@ -377,6 +377,7 @@ public class Window {
         boolean checkActivationFunctionType = true;
 
         for (ActivationFunctionType aft : ActivationFunctionType.values()){
+            if (aft.name().equals("HARDLIM")) continue;
             JRadioButton jRadioButtonInside = new JRadioButton(aft.name(), checkActivationFunctionType);
             jRadioButtonInside.setActionCommand(aft.name());
             //System.out.println(aft.name());
@@ -456,6 +457,7 @@ public class Window {
         }
 
         _cpNetwork.setKohonenLearningMode(true);
+        _cpNetwork.setGrossbergLearningMode(false);
         _learningParameters.setAlpha(new Double(_alfa.getText()));
         _learningParameters.setNeighborhood(new Integer(_neighbourhood.getText()));
         for(int i=0; i < new Integer(_iterationCount.getText());i++){
@@ -536,6 +538,8 @@ public class Window {
             i++;
         }
 
+        _cpNetwork.setKohonenLearningMode(false);
+        _cpNetwork.setGrossbergLearningMode(false);
         _cpNetwork.setInputs(inputs);
         double[] outputs = _cpNetwork.calculate();
         for(double output : outputs){
