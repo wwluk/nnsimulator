@@ -12,12 +12,16 @@ public class Neuron {
     private ActivationFunctionInterface activationFunction;
     private double bias;
     protected double output;
+    private double error;
+    private Map<Neuron, Double> previousChange;
+    private double previousBiasChange = 0.0;
 
     public Neuron(ActivationFunctionType activationFunctionType, double bias, Map<Neuron, Double> weights){
         this.activationFunctionType = activationFunctionType;
         this.bias = bias;
         this.weights = new HashMap<Neuron, Double>();
         this.weights = weights;
+        this.previousChange = new HashMap<Neuron, Double>();
 
         switch (activationFunctionType){
             case PURELIN:
@@ -32,15 +36,18 @@ public class Neuron {
         }
     }
 
-    public double calculate(){
-        double result = 0;
+    public double calculateInput(){
+        double result = 0.0;
         for(Neuron neuron : weights.keySet()){
             result +=neuron.getOutput()* weights.get(neuron);
 
         }
         result += bias;
-        output = activationFunction.calculate(result);
+        return result;
+    }
 
+    public double calculate(){
+        output = activationFunction.calculate(calculateInput());
         return output;
     }
 
@@ -60,7 +67,9 @@ public class Neuron {
         if(!weights.containsKey(neuron)){
             throw new ConnectionNotExistsException();
         }
+        previousChange.put(neuron, weight - weights.get(neuron));
         weights.put(neuron,weight);
+
              /*
         System.out.println("---WEIGHTS---");
         for(double w : weights.values()){
@@ -81,5 +90,37 @@ public class Neuron {
             }
         }
     }
+
+    public double getError() {
+        return error;
+    }
+
+    public void setError(double error) {
+        this.error = error;
+    }
+
+    public void updateError(double error){
+        this.error += error;
+    }
+
+    public double getPreviousWeightChange(Neuron neuron){
+        if(previousChange.containsKey(neuron)){
+            return previousChange.get(neuron);
+        }
+        return 0;
+    }
+
+    public void setBias(double bias){
+        previousBiasChange = bias - this.bias;
+        this.bias = bias;
+    }
+
+    public double getBias(){
+        return bias;
+    }
+    public double getPreviousBiasChange(){
+        return previousBiasChange;
+    }
+
 
 }

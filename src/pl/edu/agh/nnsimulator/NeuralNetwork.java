@@ -11,7 +11,7 @@ import java.util.List;
 
 public class NeuralNetwork {
     private InputLayer inputLayer;
-    private List<NetworkLayer> hiddenLayers = new LinkedList<NetworkLayer>();
+    protected List<NetworkLayer> hiddenLayers = new LinkedList<NetworkLayer>();
     private boolean prepared = false;
 
     /**
@@ -47,6 +47,9 @@ public class NeuralNetwork {
      * @throws InvalidDimensionsException
      */
     public void prepareNetwork() throws InvalidDimensionsException {
+        if(prepared){
+            return;
+        }
         NetworkLayer previousLayer = inputLayer;
         Iterator layersIterator = hiddenLayers.iterator();
         while(layersIterator.hasNext()){
@@ -54,6 +57,7 @@ public class NeuralNetwork {
             currentLayer.prepareNetwork(previousLayer);
             previousLayer = currentLayer;
         }
+        prepared = true;
     }
 
     /**

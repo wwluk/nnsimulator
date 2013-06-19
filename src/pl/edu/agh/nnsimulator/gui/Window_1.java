@@ -292,7 +292,7 @@ public class Window_1 {
                     _myFrames.remove(i);
                 }
             }
-            frame.revalidate();
+            frame.validate();
 
         }
     }

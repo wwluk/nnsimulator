@@ -76,4 +76,8 @@ public class NetworkLayer{
 
         return outputs;
     }
+
+    public ActivationFunctionType getActivationFunctionType() {
+        return activationFunctionType;
+    }
 }
