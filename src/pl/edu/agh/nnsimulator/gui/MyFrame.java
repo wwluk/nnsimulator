@@ -43,6 +43,7 @@ public class MyFrame extends JPanel {
         boolean checkActivationFunctionType = true;
 
         for (ActivationFunctionType aft : ActivationFunctionType.values()){
+            if (aft.name().equals("HARDLIM")) continue;
             JRadioButton jRadioButton = new JRadioButton(aft.name(), checkActivationFunctionType);
             jRadioButton.setActionCommand(aft.name());
             //System.out.println(aft.name());
