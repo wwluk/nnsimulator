@@ -2,19 +2,15 @@ package pl.edu.agh.nnsimulator.gui;
 
 import au.com.bytecode.opencsv.CSVReader;
 import pl.edu.agh.nnsimulator.CPNetwork;
-import pl.edu.agh.nnsimulator.BPNetwork;
 import pl.edu.agh.nnsimulator.KohonenNetwork;
 import pl.edu.agh.nnsimulator.LearningParameters;
 import pl.edu.agh.nnsimulator.activationFunctions.ActivationFunctionType;
 import pl.edu.agh.nnsimulator.exceptions.TooMuchInputLayersException;
 import pl.edu.agh.nnsimulator.layers.InvalidDimensionsException;
-import pl.edu.agh.nnsimulator.layers.NetworkLayer;
-import pl.edu.agh.nnsimulator.neurons.NeuronData;
 import pl.edu.agh.nnsimulator.weightsInitializers.RandomWeightsInitializer;
 import pl.edu.agh.nnsimulator.weightsInitializers.WeightsInitializer;
 import pl.edu.agh.nnsimulator.weightsInitializers.ZeroWeightsInitializer;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,10 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
-public class Window {
+public class Window_3 {
 
     private JFrame frame;
     private JTextField _inputCount;
@@ -44,14 +38,18 @@ public class Window {
     private JTextArea _inputTextArea;
     private JTextArea _outputTextArea;
     private JLabel label;
+    private JTextField _columnsTextField;
+    private JTextField _rowsTextField;
     private ButtonGroup _randomOrCustomWeights;
     private JPanel _randomOrCustomJPanel;
     private JTextField _minTextField;
     private JTextField _maxTextField;
     private JTextField textField;
     private JTextField _alfa;
+    private JTextField _neighbourhood;
     private JTextField _iterationCount;
     private KohonenNetwork _kohonenNetwork;
+    private JPanel _activationPanel;
     private ButtonGroup _activationFunctionType;
     private JTextField _neuronsInKohonenLayer;
     private LinkedList<double[]> _inputs;
@@ -60,15 +58,8 @@ public class Window {
     private int _outputNumber;
     private WeightsInitializer _weightsInitializer;
     private LearningParameters _learningParameters = new LearningParameters();
-    private JPanel _biasOnOff;
-    private JTextField _layersCount;
-    private Box _scrollPane;
-    private JScrollPane  _jScrollPane;
 
-
-    private ButtonGroup _biasOnOrOff;
-    private BPNetwork _bpNetwork; //= new CPNetwork(3,9,1,1,new RandomWeightsInitializer(-0.1,0.1), ActivationFunctionType.PURELIN);
-    private JTextField _momentum;
+    private CPNetwork _cpNetwork; //= new CPNetwork(3,9,1,1,new RandomWeightsInitializer(-0.1,0.1), ActivationFunctionType.PURELIN);
 
 
     /**
@@ -78,7 +69,7 @@ public class Window {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    Window window = new Window();
+                    Window_3 window = new Window_3();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -90,7 +81,7 @@ public class Window {
     /**
      * Create the application.
      */
-    public Window() {
+    public Window_3() {
         initialize();
     }
 
@@ -103,85 +94,50 @@ public class Window {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
+        JLabel lblInputCount = new JLabel("Neurons in");
+        lblInputCount.setBounds(0, 5, 150, 30);
+        frame.getContentPane().add(lblInputCount);
+
+        JLabel lblInputCount2 = new JLabel("kohonen layer");
+        lblInputCount2.setBounds(0, 17, 150, 30);
+        frame.getContentPane().add(lblInputCount2);
+
         _inputCount = new JTextField();
         _inputCount.setText("2");
         _inputCount.setBounds(96, 12, 32, 19);
         //frame.getContentPane().add(_inputCount);
         _inputCount.setColumns(10);
 
-        JLabel lblLayersCount = new JLabel("Layers Count");
-        lblLayersCount.setBounds(10, 130, 114, 30);
-        frame.getContentPane().add(lblLayersCount);
+        JLabel lblColumns = new JLabel("Columns");
+        lblColumns.setBounds(0, 35, 114, 30);
+        frame.getContentPane().add(lblColumns);
 
-        _layersCount = new JTextField();
+        _columnsTextField = new JTextField();
+        _columnsTextField.setText("2");
+        _columnsTextField.setBounds(56, 42, 32, 19);
+        frame.getContentPane().add(_columnsTextField);
+        _columnsTextField.setColumns(10);
 
-        _layersCount.setText("2");
-        _layersCount.setBounds(90, 135, 32, 19);
-        frame.getContentPane().add(_layersCount);
-        _layersCount.setColumns(10);
+        JLabel lblRows = new JLabel("Rows");
+        lblRows.setBounds(110, 35, 114, 30);
+        frame.getContentPane().add(lblRows);
 
+        _rowsTextField = new JTextField();
+        _rowsTextField.setText("2");
+        _rowsTextField.setBounds(150, 42, 32, 19);
+        frame.getContentPane().add(_rowsTextField);
+        _rowsTextField.setColumns(10);
 
+        JLabel lblWeights = new JLabel("Weights");
+        lblWeights.setBounds(0, 75, 114, 30);
+        frame.getContentPane().add(lblWeights);
 
-
-        _biasOnOff= new JPanel();
-        _biasOnOff.setBounds(20,200,250,30);
-        _biasOnOrOff = new ButtonGroup();
-
-        JLabel label_1 = new JLabel("Bias");
-        _biasOnOff.add(label_1);
-
-        JRadioButton jRadioButton3 = new JRadioButton("On", true);
-        jRadioButton3.setActionCommand("On");
-        _biasOnOff.add(jRadioButton3);
-        _biasOnOrOff.add(jRadioButton3);
-
-        JRadioButton jRadioButton4 = new JRadioButton("Off", false);
-        jRadioButton4.setActionCommand("Off");
-        _biasOnOff.add(jRadioButton4);
-        _biasOnOrOff.add(jRadioButton4);
-
-
-
-        _biasOnOff.setBounds(0, 70, 180, 30);
-        //_biasOnOff.setSize(300,30);
-
-        _biasOnOff.setVisible(true);
-        _biasOnOff.revalidate();
-        //_biasOnOff.set
-        frame.getContentPane().add(_biasOnOff);
-
-
-        _layersCount.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) {
-                changeLayersCount();
-            }
-            public void removeUpdate(DocumentEvent e) {
-                changeLayersCount();
-            }
-            public void insertUpdate(DocumentEvent e) {
-                changeLayersCount();
-            }
-        });
-
-
-        _scrollPane = Box.createVerticalBox();
-        //_scrollPane.setBounds(10,80,500,500);
-        frame.getContentPane().add(_scrollPane);
-
-
-        _jScrollPane = new JScrollPane(_scrollPane);
-        _jScrollPane.setBounds(10,160,340,400);
-        //_jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        frame.getContentPane().add(_jScrollPane);
 
 
 
         _randomOrCustomJPanel= new JPanel();
-        _randomOrCustomJPanel.setBounds(20,200,300,30);
+        _randomOrCustomJPanel.setBounds(0,0,300,30);
         _randomOrCustomWeights = new ButtonGroup();
-
-        JLabel lblWeights = new JLabel("Weig");
-        _randomOrCustomJPanel.add(lblWeights);
 
         JRadioButton jRadioButton = new JRadioButton("Zero", true);
         jRadioButton.setActionCommand("Zero");
@@ -219,6 +175,13 @@ public class Window {
         _pause.setBounds(240, 107, 15, 20);
         frame.getContentPane().add(_pause);
 
+
+
+
+
+        lblInputCount.setBounds(0, 5, 114, 30);
+        frame.getContentPane().add(lblInputCount);
+
         JLabel lblNeuronsInLayer = new JLabel("Neurons in kohonen layer number");
         lblNeuronsInLayer.setBounds(225, 45, 181, 15);
         //frame.getContentPane().add(lblNeuronsInLayer);
@@ -235,8 +198,6 @@ public class Window {
         frame.getContentPane().add(lblInputs);
 
         _inputTextArea = new JTextArea();
-        _inputTextArea.setSize(148, 228);
-        _inputTextArea.setLocation(0, 0);
         frame.getContentPane().add(_inputTextArea);
 
         JScrollPane jScrollPane = new JScrollPane(_inputTextArea);
@@ -265,7 +226,7 @@ public class Window {
 
         _countButton = new JButton();
         _countButton.setText("Count");
-        _countButton.setBounds(650,5,100,30);
+        _countButton.setBounds(750,5,100,30);
 
         _countButton.addActionListener(new ActionListener() {
             @Override
@@ -324,18 +285,31 @@ public class Window {
 
         frame.getContentPane().add(_countButton);
 
+        JLabel lblAlfa = new JLabel("Alfa");
+        lblAlfa.setBounds(0, 240, 114, 30);
+        frame.getContentPane().add(lblAlfa);
+
         _alfa = new JTextField();
         _alfa.setText("2");
-        _alfa.setBounds(40, 10, 50, 20);
+        _alfa.setBounds(130, 245, 50, 20);
         frame.getContentPane().add(_alfa);
 
+        JLabel lblAlfa2 = new JLabel("Neighbourhood");
+        lblAlfa2.setBounds(0, 270, 114, 30);
+        frame.getContentPane().add(lblAlfa2);
+
+        _neighbourhood = new JTextField();
+        _neighbourhood.setText("2");
+        _neighbourhood.setBounds(130, 275, 50, 20);
+        frame.getContentPane().add(_neighbourhood);
+
         JLabel lblIterationCount = new JLabel("Iteration count");
-        lblIterationCount.setBounds(160, 40, 114, 30);
+        lblIterationCount.setBounds(0, 300, 114, 30);
         frame.getContentPane().add(lblIterationCount);
 
         _iterationCount = new JTextField();
         _iterationCount.setText("2");
-        _iterationCount.setBounds(250, 45, 50, 20);
+        _iterationCount.setBounds(130, 305, 50, 20);
         frame.getContentPane().add(_iterationCount);
 
         JButton btnInitialize = new JButton();
@@ -351,21 +325,53 @@ public class Window {
         btnInitialize.setText("Initialize");
         btnInitialize.setBounds(435, 5, 80, 30);
         frame.getContentPane().add(btnInitialize);
+
+        JButton btnLearnKohonen = new JButton();
         JButton btnLearnGrossberg = new JButton();
+        btnLearnKohonen.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    learnKohonen();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (InvalidDimensionsException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
 
         btnLearnGrossberg.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    learnBp();
+                    learnGrossberg();
+                } catch (IOException e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 } catch (InvalidDimensionsException e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
         });
-        btnLearnGrossberg.setText("Learn");
-        btnLearnGrossberg.setBounds(525, 5, 120, 30);
+
+        btnLearnKohonen.setText("Learn Koh");
+        btnLearnKohonen.setBounds(520, 5, 100, 30);
+        btnLearnGrossberg.setText("Learn Gross");
+        btnLearnGrossberg.setBounds(625, 5, 120, 30);
+
+        frame.getContentPane().add(btnLearnKohonen);
         frame.getContentPane().add(btnLearnGrossberg);
+
+        JLabel lblGrossberg = new JLabel("Grossberg layer activation function type");
+        lblGrossberg.setBounds(0, 135, 300, 45);
+        frame.getContentPane().add(lblGrossberg);
+
+
+
+        _activationPanel = new JPanel();
+        _activationPanel.setBounds(0,160,300,30);
         _activationFunctionType = new ButtonGroup();
 
         boolean checkActivationFunctionType = true;
@@ -375,24 +381,17 @@ public class Window {
             JRadioButton jRadioButtonInside = new JRadioButton(aft.name(), checkActivationFunctionType);
             jRadioButtonInside.setActionCommand(aft.name());
             //System.out.println(aft.name());
-            //_activationPanel.add(jRadioButtonInside);
+            _activationPanel.add(jRadioButtonInside);
             _activationFunctionType.add(jRadioButtonInside);
             //add(jRadioButton);
             checkActivationFunctionType = false;
         }
 
-        JLabel lblAlfa_1 = new JLabel("Alfa");
-        lblAlfa_1.setBounds(10, 5, 104, 30);
-        frame.getContentPane().add(lblAlfa_1);
+        _activationPanel.setSize(300,30);
 
-        JLabel lblMomentum = new JLabel("Momentum");
-        lblMomentum.setBounds(10, 40, 114, 30);
-        frame.getContentPane().add(lblMomentum);
-
-        _momentum = new JTextField();
-        _momentum.setText("2");
-        _momentum.setBounds(75, 45, 50, 20);
-        frame.getContentPane().add(_momentum);
+        _activationPanel.setVisible(true);
+        _activationPanel.revalidate();
+        frame.add(_activationPanel);
 
         JLabel lblKohonen = new JLabel("Neurons in Kohonen layer count");
         lblKohonen.setBounds(0, 190, 200, 45);
@@ -406,8 +405,6 @@ public class Window {
 
 
     }
-
-
 
     private void readFiles() throws IOException {
         CSVReader readerInput = new CSVReader(new FileReader(_inputFile));
@@ -442,56 +439,34 @@ public class Window {
         }
     }
 
-    private void learnBp() throws InvalidDimensionsException {
-        //To change body of created methods use File | Settings | File Templates.
-        try {
-            readFiles();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        _learningParameters = new LearningParameters();
-        _learningParameters.setAlpha(new Double(_alfa.getText()));
-        _learningParameters.setMomentum(new Double(_momentum.getText()));
-        _bpNetwork.setLearningParameters(_learningParameters);
-        _bpNetwork.setWithBias(_biasOnOrOff.getSelection().getActionCommand().equals("On"));
-
-        _bpNetwork.setLearningMode(true);
-
-
-        for(int i=0; i < new Integer(_iterationCount.getText());i++){
-            int j=0;
-            for(double[] input : _inputs){
-                _bpNetwork.setInputs(input);
-                _bpNetwork.setExpectedOutput(_outputs.get(j));
-                _bpNetwork.calculate();
-                j++;
-            }
-        }
-    }
-
     private void learnKohonen() throws IOException, InvalidDimensionsException{
         readFiles();
 
-        if (_bpNetwork == null){
+        if (_cpNetwork == null){
+            try {
+                _cpNetwork = new CPNetwork(_inputNumber,new Integer(_rowsTextField.getText()), new Integer(_columnsTextField.getText()),
+                        _outputNumber, _weightsInitializer, ActivationFunctionType.valueOf(_activationFunctionType.getSelection().getActionCommand()));
+            } catch (TooMuchInputLayersException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
 
         if (_learningParameters == null){
             _learningParameters = new LearningParameters();
-            _bpNetwork.setLearningParameters(_learningParameters);
+            _cpNetwork.setLearningParameters(_learningParameters);
         }
 
-        //_bpNetwork.setKohonenLearningMode(true);
-        //_bpNetwork.setGrossbergLearningMode(false);
+        _cpNetwork.setKohonenLearningMode(true);
+        _cpNetwork.setGrossbergLearningMode(false);
         _learningParameters.setAlpha(new Double(_alfa.getText()));
-        //_learningParameters.setNeighborhood(new Integer(_neighbourhood.getText()));
+        _learningParameters.setNeighborhood(new Integer(_neighbourhood.getText()));
         for(int i=0; i < new Integer(_iterationCount.getText());i++){
             for(double[] input : _inputs){
 //                System.out.println(input[0]);
 //                System.out.println(input[1]);
 //                System.out.println(input[2]);
-                _bpNetwork.setInputs(input);
-                _bpNetwork.calculate();
+                _cpNetwork.setInputs(input);
+                _cpNetwork.calculate();
             }
         }
     }
@@ -499,22 +474,27 @@ public class Window {
     private void learnGrossberg() throws IOException, InvalidDimensionsException {
         readFiles();
 
-        _learningParameters = new LearningParameters();
-        _learningParameters.setAlpha(new Double(_alfa.getText()));
-        _learningParameters.setMomentum(new Double(_momentum.getText()));
-        _bpNetwork.setLearningParameters(_learningParameters);
-        //_bpNetwork.setWithBias(_biasOnOrOff.isSelected());
+        if (_cpNetwork == null){
+            try {
+                _cpNetwork = new CPNetwork(_inputNumber,new Integer(_rowsTextField.getText()), new Integer(_columnsTextField.getText()),
+                        _outputNumber, _weightsInitializer, ActivationFunctionType.valueOf(_activationFunctionType.getSelection().getActionCommand()));
+            } catch (TooMuchInputLayersException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
 
         LearningParameters learningParameters = new LearningParameters();
-        _bpNetwork.setLearningParameters(learningParameters);
+        _cpNetwork.setLearningParameters(learningParameters);
 
+        _cpNetwork.setKohonenLearningMode(false);
+        _cpNetwork.setGrossbergLearningMode(true);
         learningParameters.setAlpha(new Double(_alfa.getText()));
         for(int i=0; i < new Integer(_iterationCount.getText());i++){
             int j=0;
             for(double[] input : _inputs){
-                _bpNetwork.setInputs(input);
-                _bpNetwork.setExpectedOutput(_outputs.get(j));
-                _bpNetwork.calculate();
+                _cpNetwork.setInputs(input);
+                _cpNetwork.setExpectedOutput(_outputs.get(j));
+                _cpNetwork.calculate();
                 j++;
             }
         }
@@ -527,40 +507,22 @@ public class Window {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        _bpNetwork = new BPNetwork(_inputNumber);
+        _learningParameters = new LearningParameters();
         if (_randomOrCustomWeights.getSelection().getActionCommand().equals("Random")){
             _weightsInitializer = new RandomWeightsInitializer(new Double(_minTextField.getText()), new Double(_maxTextField.getText()));
         } else {
             _weightsInitializer = new ZeroWeightsInitializer();
         }
 
-        int prev = _inputNumber;
-        for(MyFrame myFrame : _myFrames){
 
-            try {
-                _bpNetwork.addLayer(new NetworkLayer(myFrame.getActivationFunctionType(),initializeWeights(prev, (int) myFrame.getNumberOfNeurons(), _weightsInitializer)));
-            } catch (TooMuchInputLayersException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-
-            prev = (int) myFrame.getNumberOfNeurons();
-
+        try {
+            _cpNetwork = new CPNetwork(_inputNumber,new Integer(_rowsTextField.getText()), new Integer(_columnsTextField.getText()),
+                    _outputNumber, _weightsInitializer, ActivationFunctionType.valueOf(_activationFunctionType.getSelection().getActionCommand()));
+        } catch (TooMuchInputLayersException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-
-        _learningParameters = new LearningParameters();
-        _bpNetwork.setLearningParameters(_learningParameters);
-    }
-
-    private static NeuronData[] initializeWeights(int prevLayerNeurons, int neurons, WeightsInitializer weightsInitializer) {
-        NeuronData[] neuronsData = new NeuronData[neurons];
-
-        for (int i = 0; i < neurons; i++) {
-            neuronsData[i] = new NeuronData(0.0, weightsInitializer.initialize(prevLayerNeurons));
-        }
-
-        return neuronsData;
-
+        _cpNetwork.setLearningParameters(_learningParameters);
     }
 
 
@@ -572,13 +534,14 @@ public class Window {
         System.out.println("wejscia: ");
         for (String string : inputsString){
             inputs[i] = Double.parseDouble(string);
-            System.out.println(inputs[i]);
+            //System.out.println(inputs[i]);
             i++;
         }
 
-        _bpNetwork.setLearningMode(false);
-        _bpNetwork.setInputs(inputs);
-        double[] outputs = _bpNetwork.calculate();
+        _cpNetwork.setKohonenLearningMode(false);
+        _cpNetwork.setGrossbergLearningMode(false);
+        _cpNetwork.setInputs(inputs);
+        double[] outputs = _cpNetwork.calculate();
         for(double output : outputs){
             System.out.println(output);
         }
@@ -603,35 +566,6 @@ public class Window {
         double[] outputs = kohonenNetwork.calculate();
         for(double output : outputs){
             System.out.println(output);
-        }
-    }
-
-    private void changeLayersCount(){
-        if (!_layersCount.getText().equals("")){
-            long layersCount = new Long(_layersCount.getText());
-            System.out.println(layersCount);
-
-            if (layersCount > _myFrames.size()){
-                //_scrollPane.setVisible(false);
-                int height = 1 + (_myFrames.size()) * 30;
-                MyFrame myFrame;
-                for (long i = _myFrames.size() ; i < layersCount ; i++){
-                    myFrame = new MyFrame(i,height);
-                    myFrame.setBounds(1, height, 320, 30);
-                    _scrollPane.add(myFrame);
-                    _myFrames.add(myFrame);
-                    height += 30;
-                }
-            } else {
-                System.out.println("asd");
-                System.out.println(_myFrames.size());
-                for (int i = _myFrames.size() - 1; i >= layersCount ; i--){
-                    _myFrames.get(i).setVisible(false);
-                    _myFrames.remove(i);
-                }
-            }
-            frame.validate();
-
         }
     }
 }
