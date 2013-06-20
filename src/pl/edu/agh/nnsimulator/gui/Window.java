@@ -394,6 +394,28 @@ public class Window {
         _momentum.setBounds(75, 45, 50, 20);
         frame.getContentPane().add(_momentum);
 
+        JButton rms = new JButton();
+        rms.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent arg0) {
+                _bpNetwork.printRmsError();
+            }
+        });
+        rms.setText("Print RMS Error");
+        rms.setBounds(710, 47, 130, 30);
+        frame.getContentPane().add(rms);
+
+        JButton weightPrinter = new JButton();
+        weightPrinter.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                _bpNetwork.printWeights();
+            }
+        });
+        weightPrinter.setText("Print weights");
+        weightPrinter.setBounds(710, 80, 130, 30);
+        frame.getContentPane().add(weightPrinter);
+
         JLabel lblKohonen = new JLabel("Neurons in Kohonen layer count");
         lblKohonen.setBounds(0, 190, 200, 45);
 //        frame.getContentPane().add(lblKohonen);
