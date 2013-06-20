@@ -183,6 +183,9 @@ public class Main {
             networkTest(bpNetwork, input);
         }
 
+        bpNetwork.printWeights();
+        bpNetwork.printRmsError();
+
     }
 
     private static void bpXorTest() throws TooMuchInputLayersException, InvalidDimensionsException {

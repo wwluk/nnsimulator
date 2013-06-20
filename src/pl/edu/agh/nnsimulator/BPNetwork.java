@@ -25,6 +25,7 @@ public class BPNetwork extends NeuralNetwork {
     private LearningParameters learningParameters;
     private boolean learningMode = false;
     private boolean withBias=true;
+    private List<Double> rmsError;
 
     /**
      * Creates neural network
@@ -33,6 +34,7 @@ public class BPNetwork extends NeuralNetwork {
      */
     public BPNetwork(int inputNum) {
         super(inputNum);
+        rmsError = new LinkedList<Double>();
     }
 
     public void setExpectedOutput(double[] expectedOutput) throws InvalidDimensionsException {
@@ -71,10 +73,12 @@ public class BPNetwork extends NeuralNetwork {
             //calculate neuron errors
             boolean outputLayer = true;
             for (NetworkLayer layer : hiddenLayersCopy){
+                double currentRmsError = 0.0;
                 int i=0;
                 for(Neuron neuron : layer.getNeurons()){
                     if(outputLayer){
                         neuron.setError(neuron.getOutput()-expectedOutput[i]);
+                        currentRmsError += Math.pow(neuron.getOutput()-expectedOutput[i], 2);
                     }
 
                     double error = neuron.getError();
@@ -85,6 +89,7 @@ public class BPNetwork extends NeuralNetwork {
                     i++;
                 }
                 if(outputLayer){
+                    rmsError.add(Math.sqrt(currentRmsError/i));
                     outputLayer = false;
                 }
 
@@ -128,5 +133,24 @@ public class BPNetwork extends NeuralNetwork {
 
     public void setWithBias(boolean withBias) {
         this.withBias = withBias;
+    }
+
+    public String printRmsError(int period){
+        StringBuilder sb = new StringBuilder();
+        int i=0;
+        for(double err : rmsError){
+            if(i%period!=0 && i != rmsError.size()-1){
+                i++;
+                continue;
+            }
+
+            sb.append("Epoka ").append(i++).append(": ").append(err).append(System.getProperty("line.separator"));
+        }
+        System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    public String printRmsError(){
+        return printRmsError(1000);
     }
 }
